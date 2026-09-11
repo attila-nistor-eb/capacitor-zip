@@ -1,5 +1,6 @@
 package ee.forgr.plugin.capacitor_zip;
 
+import android.net.Uri;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -24,6 +25,24 @@ public class CapacitorZipPlugin extends Plugin {
 
     private final String pluginVersion = "7.0.3";
 
+    /**
+     * Converts a filesystem path or file:// URL into a File. Capacitor file
+     * APIs commonly return file:// URLs, whereas java.io.File expects only a
+     * filesystem path.
+     */
+    private File fileFromPath(String path) {
+        Uri uri = Uri.parse(path);
+        if ("file".equalsIgnoreCase(uri.getScheme())) {
+            String filePath = uri.getPath();
+            if (filePath == null || filePath.isEmpty()) {
+                throw new IllegalArgumentException("Invalid file URL");
+            }
+            return new File(filePath);
+        }
+
+        return new File(path);
+    }
+
     @PluginMethod
     public void zip(PluginCall call) {
         String source = call.getString("source");
@@ -41,13 +60,13 @@ public class CapacitorZipPlugin extends Plugin {
         }
 
         try {
-            File sourceFile = new File(source);
+            File sourceFile = fileFromPath(source);
             if (!sourceFile.exists()) {
                 call.reject("Source path does not exist");
                 return;
             }
 
-            File destinationFile = new File(destination);
+            File destinationFile = fileFromPath(destination);
             File parentDir = destinationFile.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
                 parentDir.mkdirs();
@@ -84,13 +103,13 @@ public class CapacitorZipPlugin extends Plugin {
         }
 
         try {
-            File sourceFile = new File(source);
+            File sourceFile = fileFromPath(source);
             if (!sourceFile.exists()) {
                 call.reject("Source zip file does not exist");
                 return;
             }
 
-            File destinationDir = new File(destination);
+            File destinationDir = fileFromPath(destination);
             if (!destinationDir.exists()) {
                 destinationDir.mkdirs();
             }
