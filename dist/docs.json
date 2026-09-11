@@ -1,0 +1,294 @@
+{
+  "api": {
+    "name": "CapacitorZipPlugin",
+    "slug": "capacitorzipplugin",
+    "docs": "Capacitor Zip Plugin for compressing and extracting zip archives.\n\nProvides native ZIP file operations with platform-specific implementations:\n- iOS: Uses ZIPFoundation (password protection not supported)\n- Android: Uses zip4j with AES encryption support\n- Web: Uses JSZip (unzip only, triggers downloads)",
+    "tags": [
+      {
+        "text": "7.0.0",
+        "name": "since"
+      }
+    ],
+    "methods": [
+      {
+        "name": "zip",
+        "signature": "(options: ZipOptions) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "- Configuration for the zip operation",
+            "type": "ZipOptions"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options - Configuration for the zip operation"
+          },
+          {
+            "name": "returns",
+            "text": "Promise that resolves when the archive is created successfully"
+          },
+          {
+            "name": "throws",
+            "text": "Error if the source path doesn't exist, destination cannot be created, or compression fails"
+          },
+          {
+            "name": "since",
+            "text": "7.0.0"
+          },
+          {
+            "name": "example",
+            "text": "```typescript\n// Compress a directory without password\nawait CapacitorZip.zip({\n  source: '/path/to/my-folder',\n  destination: '/path/to/output.zip'\n});\n```"
+          },
+          {
+            "name": "example",
+            "text": "```typescript\n// Compress a file with password (Android only)\nawait CapacitorZip.zip({\n  source: '/path/to/document.pdf',\n  destination: '/path/to/protected.zip',\n  password: 'mySecurePassword123'\n});\n```"
+          }
+        ],
+        "docs": "Compress a file or directory to create a ZIP archive.\n\nCreates a compressed archive from a source file or directory. The archive\nwill include the entire directory structure if the source is a folder.\n\nPlatform-specific notes:\n- iOS: Password protection is not supported. If a password is provided, it will be ignored and a warning will be logged.\n- Android: Supports AES-256 encryption when a password is provided.\n- Web: Not supported. Throws an error if called.",
+        "complexTypes": [
+          "ZipOptions"
+        ],
+        "slug": "zip"
+      },
+      {
+        "name": "unzip",
+        "signature": "(options: UnzipOptions) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "- Configuration for the unzip operation",
+            "type": "UnzipOptions"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options - Configuration for the unzip operation"
+          },
+          {
+            "name": "returns",
+            "text": "Promise that resolves when extraction is complete"
+          },
+          {
+            "name": "throws",
+            "text": "Error if the source file doesn't exist, is not a valid ZIP archive, password is incorrect, or extraction fails"
+          },
+          {
+            "name": "since",
+            "text": "7.0.0"
+          },
+          {
+            "name": "example",
+            "text": "```typescript\n// Extract a standard ZIP archive\nawait CapacitorZip.unzip({\n  source: '/path/to/archive.zip',\n  destination: '/path/to/extract-folder'\n});\n```"
+          },
+          {
+            "name": "example",
+            "text": "```typescript\n// Extract a password-protected archive\nawait CapacitorZip.unzip({\n  source: '/path/to/protected.zip',\n  destination: '/path/to/extract-folder',\n  password: 'mySecurePassword123'\n});\n```"
+          }
+        ],
+        "docs": "Extract a ZIP archive to a specified destination directory.\n\nExtracts all files and folders from a ZIP archive while preserving the\ndirectory structure. Creates the destination directory if it doesn't exist.\n\nPlatform-specific notes:\n- iOS: Supports standard ZIP archives. Password-protected archives are extracted with the provided password.\n- Android: Supports AES-encrypted archives with password. Includes zip slip vulnerability protection.\n- Web: Downloads each file individually to the browser's download folder. Cannot create a directory structure.",
+        "complexTypes": [
+          "UnzipOptions"
+        ],
+        "slug": "unzip"
+      },
+      {
+        "name": "getPluginVersion",
+        "signature": "() => Promise<{ version: string; }>",
+        "parameters": [],
+        "returns": "Promise<{ version: string; }>",
+        "tags": [
+          {
+            "name": "returns",
+            "text": "Promise that resolves with an object containing the version string"
+          },
+          {
+            "name": "throws",
+            "text": "Error if unable to retrieve the version"
+          },
+          {
+            "name": "since",
+            "text": "7.0.0"
+          },
+          {
+            "name": "example",
+            "text": "```typescript\nconst { version } = await CapacitorZip.getPluginVersion();\nconsole.log('Plugin version:', version); // \"7.0.0\"\n```"
+          }
+        ],
+        "docs": "Get the native plugin version.\n\nReturns the version of the native plugin code, which follows the Capacitor\nmajor version (e.g., 7.0.0 for Capacitor 7.x).",
+        "complexTypes": [],
+        "slug": "getpluginversion"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [
+    {
+      "name": "ZipOptions",
+      "slug": "zipoptions",
+      "docs": "Options for creating a ZIP archive.",
+      "tags": [
+        {
+          "text": "7.0.0",
+          "name": "since"
+        }
+      ],
+      "methods": [],
+      "properties": [
+        {
+          "name": "source",
+          "tags": [
+            {
+              "text": "7.0.0",
+              "name": "since"
+            },
+            {
+              "text": "'/Users/app/Documents/my-folder'",
+              "name": "example"
+            },
+            {
+              "text": "'/var/mobile/Containers/Data/Application/.../Documents/file.pdf'",
+              "name": "example"
+            },
+            {
+              "text": "'file:///storage/emulated/0/Download/document.pdf'",
+              "name": "example"
+            }
+          ],
+          "docs": "Path to the file or directory to compress.\n\nThis can be an absolute path or a path relative to the app's working directory.\nIf the source is a directory, all its contents will be recursively compressed\nwhile preserving the directory structure.\n\nPlatform-specific notes:\n- iOS: Use file:// URLs or absolute paths. Relative paths are resolved from the app's documents directory.\n- Android: Use absolute file paths or content:// URIs for files accessible via the Android Storage Access Framework.\n- Web: Not supported.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "destination",
+          "tags": [
+            {
+              "text": "7.0.0",
+              "name": "since"
+            },
+            {
+              "text": "'/Users/app/Documents/archive.zip'",
+              "name": "example"
+            },
+            {
+              "text": "'/var/mobile/Containers/Data/Application/.../Documents/backup.zip'",
+              "name": "example"
+            },
+            {
+              "text": "'file:///storage/emulated/0/Download/compressed.zip'",
+              "name": "example"
+            }
+          ],
+          "docs": "Path where the ZIP archive will be created.\n\nThe destination path must include the .zip file extension. If the parent\ndirectory doesn't exist, it will be created automatically.\n\nPlatform-specific notes:\n- iOS: Use file:// URLs or absolute paths. Relative paths are resolved from the app's documents directory.\n- Android: Use absolute file paths. The plugin will create any missing parent directories.\n- Web: Not supported.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "tags": [
+            {
+              "text": "7.0.0",
+              "name": "since"
+            },
+            {
+              "text": "'mySecurePassword123'",
+              "name": "example"
+            }
+          ],
+          "docs": "Optional password for encrypting the ZIP archive.\n\nWhen provided, the archive will be encrypted and require this password\nto extract. Uses AES-256 encryption on Android.\n\nPlatform-specific notes:\n- iOS: Password protection is NOT supported. The password will be ignored and a warning will be logged.\n- Android: Supports AES-256 encryption via zip4j library. The password must be provided during extraction.\n- Web: Not supported.",
+          "complexTypes": [],
+          "type": "string | undefined"
+        }
+      ]
+    },
+    {
+      "name": "UnzipOptions",
+      "slug": "unzipoptions",
+      "docs": "Options for extracting a ZIP archive.",
+      "tags": [
+        {
+          "text": "7.0.0",
+          "name": "since"
+        }
+      ],
+      "methods": [],
+      "properties": [
+        {
+          "name": "source",
+          "tags": [
+            {
+              "text": "7.0.0",
+              "name": "since"
+            },
+            {
+              "text": "'/Users/app/Documents/archive.zip'",
+              "name": "example"
+            },
+            {
+              "text": "'/var/mobile/Containers/Data/Application/.../Documents/backup.zip'",
+              "name": "example"
+            },
+            {
+              "text": "'file:///storage/emulated/0/Download/compressed.zip'",
+              "name": "example"
+            },
+            {
+              "text": "'https://example.com/files/archive.zip' (Web only)",
+              "name": "example"
+            }
+          ],
+          "docs": "Path to the ZIP archive to extract.\n\nThe source must be a valid ZIP file. If the file doesn't exist or is\ncorrupted, the operation will fail with an error.\n\nPlatform-specific notes:\n- iOS: Use file:// URLs or absolute paths. Relative paths are resolved from the app's documents directory.\n- Android: Use absolute file paths or content:// URIs for files accessible via the Android Storage Access Framework.\n- Web: Use HTTP/HTTPS URLs. The file will be fetched and extracted in the browser.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "destination",
+          "tags": [
+            {
+              "text": "7.0.0",
+              "name": "since"
+            },
+            {
+              "text": "'/Users/app/Documents/extracted'",
+              "name": "example"
+            },
+            {
+              "text": "'/var/mobile/Containers/Data/Application/.../Documents/files'",
+              "name": "example"
+            },
+            {
+              "text": "'file:///storage/emulated/0/Download/extracted-files'",
+              "name": "example"
+            }
+          ],
+          "docs": "Path to the directory where files will be extracted.\n\nThe destination directory will be created if it doesn't exist. All files\nand folders from the archive will be extracted while preserving the\ndirectory structure.\n\nPlatform-specific notes:\n- iOS: Use file:// URLs or absolute paths. Relative paths are resolved from the app's documents directory.\n- Android: Use absolute file paths. Includes protection against zip slip vulnerabilities.\n- Web: Not applicable. Files are downloaded individually to the browser's download folder.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "tags": [
+            {
+              "text": "7.0.0",
+              "name": "since"
+            },
+            {
+              "text": "'mySecurePassword123'",
+              "name": "example"
+            }
+          ],
+          "docs": "Optional password for decrypting password-protected archives.\n\nRequired if the ZIP archive was encrypted with a password. If the password\nis incorrect, extraction will fail with an error.\n\nPlatform-specific notes:\n- iOS: Supports password-protected ZIP archives.\n- Android: Supports AES-encrypted archives created with zip4j or standard password-protected ZIPs.\n- Web: Not supported. Password-protected archives cannot be extracted in the browser.",
+          "complexTypes": [],
+          "type": "string | undefined"
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "typeAliases": [],
+  "pluginConfigs": []
+}
